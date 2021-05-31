@@ -1,5 +1,3 @@
-reset
-
 while [ true ] ; do
 echo "
 Please select an option:
@@ -9,6 +7,7 @@ Please select an option:
 4) quit "
 echo ""
 read -n 1 arg
+reset
 echo ""
 
 case $arg in
@@ -30,7 +29,8 @@ case $arg in
         --confidence 0.20 \
         --image ${image};;
 
-4*)     exit 0;;
+4*)     echo "Exitting the program."
+        exit 0;;
 *)      echo "Select a valid option"
 esac    
 done
