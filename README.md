@@ -64,11 +64,14 @@ Libraries used are:
 7. "paths" from imutils
 
 CL-Arguments it takes:
+
 1. "--dataset" - path to input directory of faces + images
 2. "--detector" - path to output serialized db of facial embeddings
 3. "--embeddings" - path to OpenCV's deep learning face detector
 4. "--confidence" - minimum probability to filter weak detections
+
 Models Used:
+
 1. [openface.nn4.small2.v1.t7](https://github.com/pyannote/pyannote-data/blob/master/openface.nn4.small2.v1.t7)
 2. [deploy.prototxt](https://github.com/opencv/opencv/blob/master/samples/dnn/face_detector/deploy.prototxt)
 3. [Caffe Model](https://github.com/gopinath-balu/computer_vision/blob/master/CAFFE_DNN/res10_300x300_ssd_iter_140000.caffemodel)
@@ -78,24 +81,28 @@ Models Used:
 File: <em>train_model.py</em>
 
 Libraries used:
+
 1. "LabelEncoder" from sklearn.preprocessing
 2. "SVC" from sklearn.svm
 3. argparse
 4. pickle
 
 CL-Arguments it takes:
+
 1. "--embeddings" - path to serialized db of facial embeddings
 2. "--recognizer" - path to output model trained to recognize faces
 3. "--le" - path to output label encoder
 
 Model used:
-1) SVC from sklearn.svm
+
+1. SVC from sklearn.svm
 
 ### Step #3: Recognize faces with OpenCV
 
 File: <em>recognize.py</em>
 
 Libraries used:
+
 1. os
 2. cv2
 3. pickle
@@ -104,6 +111,7 @@ Libraries used:
 6. numpy
 
 CL-Arguments it takes:
+
 1. "--image" - path to input image
 2. "--detector" - path to OpenCV's deep learning face detector
 3. "--recognizer" - path to model trained to recognize faces
@@ -111,6 +119,7 @@ CL-Arguments it takes:
 5. "--confidence" - minimum probability to filter weak detections
 
 Models Used:
+
 1. [openface.nn4.small2.v1.t7](https://github.com/pyannote/pyannote-data/blob/master/openface.nn4.small2.v1.t7)
 2. [deploy.prototxt](https://github.com/opencv/opencv/blob/master/samples/dnn/face_detector/deploy.prototxt)
 3. [Caffe Model](https://github.com/gopinath-balu/computer_vision/blob/master/CAFFE_DNN/res10_300x300_ssd_iter_140000.caffemodel)
