@@ -69,7 +69,9 @@ CL-Arguments it takes:
 3. "--embeddings" - path to OpenCV's deep learning face detector
 4. "--confidence" - minimum probability to filter weak detections
 Models Used:
-1) [openface.nn4.small2.v1.t7](https://github.com/pyannote/pyannote-data/blob/master/openface.nn4.small2.v1.t7)
+1. [openface.nn4.small2.v1.t7](https://github.com/pyannote/pyannote-data/blob/master/openface.nn4.small2.v1.t7)
+2. [deploy.prototxt](https://github.com/opencv/opencv/blob/master/samples/dnn/face_detector/deploy.prototxt)
+3. [Caffe Model](https://github.com/gopinath-balu/computer_vision/blob/master/CAFFE_DNN/res10_300x300_ssd_iter_140000.caffemodel)
 
 ### Step #2: Train face recognition model
 
@@ -109,4 +111,6 @@ CL-Arguments it takes:
 5. "--confidence" - minimum probability to filter weak detections
 
 Models Used:
-1) [openface.nn4.small2.v1.t7](https://github.com/pyannote/pyannote-data/blob/master/openface.nn4.small2.v1.t7)
+1. [openface.nn4.small2.v1.t7](https://github.com/pyannote/pyannote-data/blob/master/openface.nn4.small2.v1.t7)
+2. [deploy.prototxt](https://github.com/opencv/opencv/blob/master/samples/dnn/face_detector/deploy.prototxt)
+3. [Caffe Model](https://github.com/gopinath-balu/computer_vision/blob/master/CAFFE_DNN/res10_300x300_ssd_iter_140000.caffemodel)
