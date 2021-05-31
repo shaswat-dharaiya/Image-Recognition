@@ -21,8 +21,8 @@ File Structure:
     * ...
     * person n
 * face_detection_model
-    * deploy.prototxt
-    * res10_300x300_ssd_iter_140000.caffemodel
+    * [deploy.prototxt](https://github.com/opencv/opencv/blob/master/samples/dnn/face_detector/deploy.prototxt)
+    * [res10_300x300_ssd_iter_140000.caffemodel](https://github.com/gopinath-balu/computer_vision/blob/master/CAFFE_DNN/res10_300x300_ssd_iter_140000.caffemodel)
 * output
     * embeddings.pickle
     * le.pickle
