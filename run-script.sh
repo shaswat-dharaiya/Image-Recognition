@@ -1,25 +1,36 @@
-arg="$1"
+reset
 
-if [ "${arg}" == "extract" ]
-then
-    # echo "1 selected"
-    python python_files/extract_embeddings.py --dataset dataset --embeddings output/embeddings.pickle --detector face_detection_model
-elif [ "${arg}" == "train" ]
-then
-    # echo "2 selected"
-    python python_files/train_model.py --embeddings output/embeddings.pickle \
+while [ true ] ; do
+echo "
+Please select an option:
+1) extract
+2) train
+3) recognize
+4) quit "
+echo ""
+read -n 1 arg
+echo ""
+
+case $arg in
+1*)    python python_files/extract_embeddings.py \
+        --dataset dataset \
+        --embeddings output/embeddings.pickle \
+        --detector face_detection_model;;
+
+2*)     python python_files/train_model.py \
+        --embeddings output/embeddings.pickle \
         --recognizer output/recognizer.pickle \
-        --le output/le.pickle
-elif [ "${arg}" == "recognize" ]
-then
-    python python_files/recognize.py --detector face_detection_model \
-	--recognizer output/recognizer.pickle \
-	--le output/le.pickle \
-	--confidence 0.20 \
-    --image 1.png
-else
-   echo "Please select a valid argument:
-    1) \"extract\"
-    2) \"train\"
-    3) \"recognize\""
-fi
+        --le output/le.pickle;;
+
+3*)     read -p "Input file: " image
+        python python_files/recognize.py \
+        --detector face_detection_model \
+        --recognizer output/recognizer.pickle \
+        --le output/le.pickle \
+        --confidence 0.20 \
+        --image ${image};;
+
+4*)     exit 0;;
+*)      echo "Select a valid option"
+esac    
+done

@@ -5,6 +5,8 @@ import pickle
 import imutils
 import argparse
 import numpy as np
+import mysql.connector
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--image", required=True,
@@ -46,6 +48,26 @@ imageBlob = cv2.dnn.blobFromImage(
 detector.setInput(imageBlob)
 detections = detector.forward()
 
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="",
+  database="Student_DB"
+)
+
+mycursor = mydb.cursor()
+
+mycursor.execute("SELECT * FROM Student_List")
+
+# student_list = mycursor.fetchall()
+
+student_list = [list(student) for student in mycursor.fetchall()]
+
+# print(student_list)
+student_details = []
+
+print("\nFollowing Students are present:\n")
+
 # loop over the detections
 for i in range(0, detections.shape[2]):
 	# extract the confidence (i.e., probability) associated with the
@@ -75,16 +97,23 @@ for i in range(0, detections.shape[2]):
 		preds = recognizer.predict_proba(vec)[0]
 		j = np.argmax(preds)
 		proba = preds[j]
-		name = le.classes_[j]
+		student = le.classes_[j]
+		
+		for std in student_list:			
+			if str(std[0]) == student:
+				# print(student)
+				student_details.append(std) 
 
 		# draw the bounding box of the face along with the associated
 		# probability
-		text = "{}: {:.2f}%".format(name, proba * 100)
+		text = "{}: {:.2f}%".format(student, proba * 100)
 		y = startY - 10 if startY - 10 > 10 else startY + 10
 		cv2.rectangle(image, (startX, startY), (endX, endY),
 			(0, 0, 255), 2)
 		cv2.putText(image, text, (startX, y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+
+print(student_details)
 # show the output image
-cv2.imshow("Image", image)
-cv2.waitKey(0)
+# cv2.imshow("Image", image)
+# cv2.waitKey(0)
