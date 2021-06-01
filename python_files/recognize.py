@@ -4,8 +4,10 @@ import cv2
 import pickle
 import imutils
 import argparse
+import datetime
 import numpy as np
 import mysql.connector
+
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -16,6 +18,8 @@ ap.add_argument("-d", "--detector", required=True,
 ap.add_argument("-r", "--recognizer", required=True,
 	help="path to model trained to recognize faces")
 ap.add_argument("-l", "--le", required=True,
+	help="path to label encoder")
+ap.add_argument("-k", "--course", required=True,
 	help="path to label encoder")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
@@ -48,6 +52,9 @@ imageBlob = cv2.dnn.blobFromImage(
 detector.setInput(imageBlob)
 detections = detector.forward()
 
+x = datetime.datetime.now()
+date = str(x.strftime("%d %b %Y"))
+
 mydb = mysql.connector.connect(
   host="localhost",
   user="root",
@@ -57,16 +64,21 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("SELECT * FROM Student_List")
+querySelect = "SELECT RollNo FROM Student_List"
 
+mycursor.execute(querySelect)
 # student_list = mycursor.fetchall()
-
-student_list = [list(student) for student in mycursor.fetchall()]
-
+student_list = [list(student)[0] for student in mycursor.fetchall()]
 # print(student_list)
-student_details = []
 
-print("\nFollowing Students are present:\n")
+querySelect1 = "SELECT * FROM Student_Attendance WHERE Date = '{}' AND Course = '{}'".format(date,args["course"])
+mycursor.execute(querySelect1)
+# student_list = mycursor.fetchall()
+student_attendance = mycursor.fetchall()
+# print(student_attendance)
+
+student_details = []
+print("\nFollowing Students are present for the Course: {}:\n".format(args["course"]))
 
 # loop over the detections
 for i in range(0, detections.shape[2]):
@@ -100,20 +112,30 @@ for i in range(0, detections.shape[2]):
 		student = le.classes_[j]
 		
 		for std in student_list:			
-			if str(std[0]) == student:
-				# print(student)
-				student_details.append(std) 
+			if str(std) == student:
+				print(student)
+				student_details.append((date,args["course"],std)) 
 
 		# draw the bounding box of the face along with the associated
 		# probability
-		text = "{}: {:.2f}%".format(student, proba * 100)
-		y = startY - 10 if startY - 10 > 10 else startY + 10
-		cv2.rectangle(image, (startX, startY), (endX, endY),
-			(0, 0, 255), 2)
-		cv2.putText(image, text, (startX, y),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+		# text = "{}: {:.2f}%".format(student, proba * 100)
+		# y = startY - 10 if startY - 10 > 10 else startY + 10
+		# cv2.rectangle(image, (startX, startY), (endX, endY),
+		# 	(0, 0, 255), 2)
+		# cv2.putText(image, text, (startX, y),
+		# 	cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
 
-print(student_details)
+query = "INSERT INTO Student_Attendance VALUES (%s, %s, %s)"
+
+student_details = list(set(student_details).difference(student_attendance))
+
+mycursor.executemany(query,student_details)
+mydb.commit()
+
+print(mycursor.rowcount, "was inserted.")
+
+
 # show the output image
 # cv2.imshow("Image", image)
 # cv2.waitKey(0)
+os.remove(args["image"])
