@@ -21,6 +21,8 @@ ap.add_argument("-l", "--le", required=True,
                 help="path to label encoder")
 ap.add_argument("-k", "--course", required=True,
                 help="path to label encoder")
+ap.add_argument("-t", "--date", required=False,
+                help="path to label encoder")
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
                 help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
@@ -52,8 +54,10 @@ imageBlob = cv2.dnn.blobFromImage(
 detector.setInput(imageBlob)
 detections = detector.forward()
 
-x = datetime.datetime.now()
-date = str(x.strftime("%d %b %Y"))
+# x = datetime.datetime.now()
+# date = str(x.strftime("%d %b %Y")
+date = args["date"]
+print(type(date))
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -64,12 +68,12 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-querySelect = "SELECT RollNo FROM Student_List"
+querySelect = "SELECT roll_no FROM students"
 
 mycursor.execute(querySelect)
 # student_list = mycursor.fetchall()
 student_list = [list(student)[0] for student in mycursor.fetchall()]
-# print(student_list)
+print(student_list)
 
 querySelect1 = "SELECT * FROM Student_Attendance WHERE Date = '{}' AND Course = '{}'".format(
     date, args["course"])
@@ -114,7 +118,7 @@ for i in range(0, detections.shape[2]):
         student = le.classes_[j]
 
         for std in student_list:
-            if str(std) == student:
+            if std == student:
                 print(student)
                 student_details.append((date, args["course"], std))
 
@@ -130,7 +134,7 @@ for i in range(0, detections.shape[2]):
 query = "INSERT INTO Student_Attendance VALUES (%s, %s, %s)"
 
 student_details = list(set(student_details).difference(student_attendance))
-
+# print(student_details)
 mycursor.executemany(query, student_details)
 mydb.commit()
 

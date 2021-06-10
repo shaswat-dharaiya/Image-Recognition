@@ -36,11 +36,13 @@ def recognize():
     filename = file.filename
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     course = request.form.get('course')
+    date = request.form.get('date')
     os.system("python recognize.py \
         --detector ../face_detection_model \
         --recognizer ../output/recognizer.pickle \
         --le ../output/le.pickle \
         --confidence 0.20 \
         --course "+course+" \
+        --date "+date+" \
         --image "+UPLOAD_FOLDER+filename)
     return "Recognition Complete"
