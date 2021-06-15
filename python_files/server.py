@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, Response
 
 UPLOAD_FOLDER = '../images/'
 
@@ -32,17 +32,26 @@ def train():
 
 @app.route('/recognize', methods=["POST"])
 def recognize():
-    file = request.files['recognize']
-    filename = file.filename
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    course = request.form.get('course')
-    date = request.form.get('date')
-    os.system("python recognize.py \
-        --detector ../face_detection_model \
-        --recognizer ../output/recognizer.pickle \
-        --le ../output/le.pickle \
-        --confidence 0.20 \
-        --course "+course+" \
-        --date "+date+" \
-        --image "+UPLOAD_FOLDER+filename)
-    return "Recognition Complete"
+    try:
+        file = request.files['recognize']
+        filename = file.filename
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        course = request.form.get('course')
+        date = request.form.get('date')
+        # os.popen('cat /etc/services').read()
+
+        val = os.popen("python recognize.py \
+            --detector ../face_detection_model \
+            --recognizer ../output/recognizer.pickle \
+            --le ../output/le.pickle \
+            --confidence 0.20 \
+            --course "+course+" \
+            --date "+date+" \
+            --image "+UPLOAD_FOLDER+filename).read()
+        return {"message": val.split(":")[1]}, val.split(":")[0]
+
+    except Exception as error:
+        return jsonify({
+            "status_code": 400,
+            "message": "Error"
+        })
